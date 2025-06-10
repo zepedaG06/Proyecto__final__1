@@ -1,5 +1,4 @@
 from datetime import datetime
-from .jugadores import jugadores_registrados  # ← MOVERLO AQUÍ
 
 asistencias_registradas = {}
 
@@ -11,7 +10,8 @@ def registrar_asistencia(cedula):
     else:
         asistencias_registradas[cedula] = [fecha]
     
+    from .jugadores import jugadores_registrados
     if cedula in jugadores_registrados:
         jugadores_registrados[cedula]["asistencias"] += 1
     
-    print(f"✅ Asistencia registrada para cédula {cedula}.")
+    print(f"Asistencia registrada para cédula {cedula}.")
