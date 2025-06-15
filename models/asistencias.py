@@ -43,4 +43,5 @@ def listar_asistencias(cedula=None, fecha_inicio=None, fecha_fin=None):
                 filtradas.append(f)
             if filtradas:
                 resultado[jugador_cedula] = filtradas
+        print(f"Resultado: {resultado}")  # Salida de depuración
         return resultado
