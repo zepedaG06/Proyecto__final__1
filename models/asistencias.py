@@ -19,7 +19,7 @@ def registrar_asistencia(cedula):
         
         db_jug[cedula]['asistencias'] += 1
 
-        print(f"✅ Asistencia registrada para {db_jug[cedula]['nombre']} {db_jug[cedula]['apellido']} en {fecha}.")
+        print(f"Asistencia registrada para {db_jug[cedula]['nombre']} {db_jug[cedula]['apellido']} en {fecha}.")
 
 def listar_asistencias(cedula=None, fecha_inicio=None, fecha_fin=None):
     with shelve.open(DB_ASISTENCIAS) as db_asist:
@@ -43,5 +43,5 @@ def listar_asistencias(cedula=None, fecha_inicio=None, fecha_fin=None):
                 filtradas.append(f)
             if filtradas:
                 resultado[jugador_cedula] = filtradas
-        print(f"Resultado: {resultado}")  # Salida de depuración
+        print(f"Resultado: {resultado}") 
         return resultado

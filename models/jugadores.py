@@ -60,7 +60,7 @@ def registrar_jugador():
             "asistencias": 0
         }
         db[cedula] = jugador
-        print(f"✅ Jugador {nombre} {apellido} registrado con éxito.")
+        print(f"Jugador {nombre} {apellido} registrado con éxito.")
 
 def buscar_jugador(cedula_o_nombre):
     with shelve.open(DB_JUGADORES) as db:
@@ -97,4 +97,4 @@ def modificar_jugador():
         if antecedentes:
             jugador['antecedentes'] = antecedentes
 
-        print("✅ Datos actualizados correctamente.")
+        print("Datos actualizados correctamente.")
