@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Plantel Fútbol UAM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Oswald', sans-serif;
+    }
+    .login, .menu {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .contenedor-login {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background-color: #f9f9f9;
+    }
+    .contenedor-login img {
+      width: 180px;
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 250px;
+    }
+    button {
+      background-color: #004aad;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background-color: #003080;
+    }
+
+    .menu header {
+      text-align: center;
+      background: white;
+    }
+    .banner-equipo {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-bottom: 3px solid #004aad;
+    }
+    .menu h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5em;
+      color: #004aad;
+    }
+    .opciones {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5em;
+      padding: 2em;
+      text-align: center;
+    }
+    .opcion {
+      background-color: #004aad;
+      padding: 1em;
+      border-radius: 10px;
+    }
+    .opcion a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.2em;
+    }
+    .opcion a:hover {
+      color: yellow;
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login active" id="login">
+  <div class="contenedor-login">
+    <img src="logo-jaguares.png" alt="Logo Jaguares UAM">
+    <h2>Iniciar Sesión</h2>
+    <input type="text" id="usuario" placeholder="Usuario" required>
+    <input type="password" id="clave" placeholder="Contraseña" required>
+    <button onclick="validarLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- MENÚ -->
+<div class="menu" id="menu">
+  <header>
+    <img src="equipo-uam.png" class="banner-equipo" alt="Equipo UAM">
+    <h1>Bienvenido al Sistema del Plantel de Fútbol</h1>
+  </header>
+  <section class="opciones">
+    <div class="opcion"><a href="#">Registrar Jugador</a></div>
+    <div class="opcion"><a href="#">Buscar Jugador</a></div>
+    <div class="opcion"><a href="#">Modificar Jugador</a></div>
+    <div class="opcion"><a href="#">Registrar Asistencia</a></div>
+    <div class="opcion"><a href="#">Ver Jugadores</a></div>
+    <div class="opcion"><a href="#">Eliminar Jugador</a></div>
+  </section>
+</div>
+
+<script>
+  function validarLogin() {
+    const usuario = document.getElementById('usuario').value;
+    const clave = document.getElementById('clave').value;
+
+    if (usuario === "admin" && clave === "futbol123") {
+      document.getElementById('login').classList.remove('active');
+      document.getElementById('menu').classList.add('active');
+    } else {
+      alert("Usuario o contraseña incorrectos.");
+    }
+  }
+</script>
+
+</body>
+</html>
