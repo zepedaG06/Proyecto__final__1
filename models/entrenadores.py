@@ -18,6 +18,6 @@ def iniciar_sesion():
         contrasena = input("Contraseña: ").strip()
         if usuario in db and db[usuario] == contrasena:
             print(f"Bienvenido, {usuario}!")
-            return True
+            return usuario  
         print("Usuario o contraseña incorrectos.")
-        return False
+        return None
