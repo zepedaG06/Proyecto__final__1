@@ -1,6 +1,11 @@
+import re
+
 def validar_cedula(cedula: str) -> bool:
     cedula_limpia = cedula.replace("-", "").replace(" ", "")
-    return cedula_limpia.isdigit() and (6 <= len(cedula_limpia) <= 8 or len(cedula_limpia) == 13)
+    
+    patron = r'^001\d{6}\d{4}[A-Z]$'
+    
+    return bool(re.match(patron, cedula_limpia.upper()))
 
 def validar_nombre(nombre: str) -> bool:
     return bool(nombre.strip()) and all(c.isalpha() or c.isspace() for c in nombre)
