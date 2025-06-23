@@ -2,7 +2,6 @@ import re
 
 def validar_cedula(cedula: str) -> bool:
     cedula_limpia = cedula.replace("-", "").replace(" ", "")
-    
     patron = r'^001\d{6}\d{4}[A-Z]$'
     
     return bool(re.match(patron, cedula_limpia.upper()))
