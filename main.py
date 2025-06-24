@@ -1,30 +1,7 @@
 import os
-from models.jugadores import registrar_jugador, buscar_jugador, modificar_jugador
-from models.asistencias import registrar_asistencia, listar_asistencias
-
-from models.entrenadores import registrar_entrenador, iniciar_sesion
-from models.jugadores import registrar_jugador, buscar_jugador, modificar_jugador, eliminar_jugador
-
-
-def login():
-    while True:
-        print("=== Bienvenido a EliteBasket ===")
-        print("1. Iniciar sesión")
-        print("2. Registrar nuevo entrenador")
-        print("3. Salir")
-        opcion = input("Seleccione una opción: ").strip()
-        if opcion == "1":
-            usuario = iniciar_sesion()
-            if usuario:
-                return usuario  
-        elif opcion == "2":
-            registrar_entrenador()
-        elif opcion == "3":
-            exit()
-        else:
-            print("Opción inválida.")
-
-
+from dao.entrenador_dao import registrar_entrenador, iniciar_sesion
+from dao.jugador_dao import registrar_jugador, buscar_jugador, modificar_jugador, eliminar_jugador
+from dao.asistencia_dao import registrar_asistencia, listar_asistencias
 
 def limpiar_pantalla():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -41,28 +18,19 @@ def mostrar_jugador(entrenador_usuario, cedula_o_nombre):
         print(f"Altura: {jugador['altura']} cm")
         print(f"Antecedentes de lesión: {jugador['antecedentes']}")
         print(f"Asistencias registradas: {jugador['asistencias']}")
-        
-        if 'imc' in jugador:
-            print(f"Índice de masa corporal (IMC): {jugador['imc']}")
-        else:
-            print("Índice de masa corporal (IMC): no registrado")
+        print(f"Índice de masa corporal (IMC): {jugador.get('imc', 'No registrado')}")
     else:
         print("Jugador no encontrado.")
 
-
-
 def listar_jugadores(entrenador_usuario):
-    import shelve
-    from models.jugadores import DB_JUGADORES
-    with shelve.open(DB_JUGADORES) as db:
-        if entrenador_usuario not in db or len(db[entrenador_usuario]) == 0:
-            print("\nNo hay jugadores registrados para este entrenador.")
-            return
-        print("\n--- JUGADORES REGISTRADOS ---")
-        for cedula in db[entrenador_usuario]:
-            j = db[entrenador_usuario][cedula]
-            print(f"Cédula: {cedula} | Nombre: {j['nombre']} {j['apellido']}")
-
+    from dao.jugador_dao import cargar_jugadores
+    jugadores = cargar_jugadores()
+    if entrenador_usuario not in jugadores or not jugadores[entrenador_usuario]:
+        print("\nNo hay jugadores registrados para este entrenador.")
+        return
+    print("\n--- JUGADORES REGISTRADOS ---")
+    for cedula, j in jugadores[entrenador_usuario].items():
+        print(f"Cédula: {cedula} | Nombre: {j['nombre']} {j['apellido']}")
 
 def mostrar_menu():
     print("""
@@ -76,6 +44,23 @@ def mostrar_menu():
 7. Salir
 """)
 
+def login():
+    while True:
+        print("=== Bienvenido a EliteBasket ===")
+        print("1. Iniciar sesión")
+        print("2. Registrar nuevo entrenador")
+        print("3. Salir")
+        opcion = input("Seleccione una opción: ").strip()
+        if opcion == "1":
+            usuario = iniciar_sesion()
+            if usuario:
+                return usuario
+        elif opcion == "2":
+            registrar_entrenador()
+        elif opcion == "3":
+            exit()
+        else:
+            print("Opción inválida.")
 
 def main(usuario_actual):
     limpiar_pantalla()
@@ -115,11 +100,11 @@ def main(usuario_actual):
             limpiar_pantalla()
             print("--- Eliminar jugador ---")
             eliminar_jugador(usuario_actual)
-            
+
         elif opcion == "7":
-         print("\n¡Gracias por usar EliteBasket! Hasta pronto.")
-         break
-        
+            print("\n¡Gracias por usar EliteBasket! Hasta pronto.")
+            break
+
         else:
             print("Opción no válida. Intente nuevamente.")
 

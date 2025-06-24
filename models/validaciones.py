@@ -3,7 +3,6 @@ import re
 def validar_cedula(cedula: str) -> bool:
     cedula_limpia = cedula.replace("-", "").replace(" ", "")
     patron = r'^001\d{6}\d{4}[A-Z]$'
-    
     return bool(re.match(patron, cedula_limpia.upper()))
 
 def validar_nombre(nombre: str) -> bool:
@@ -37,4 +36,5 @@ def validar_altura(altura: str) -> bool:
 
 def validar_antecedentes(antecedentes: str) -> bool:
     return True
+
 
