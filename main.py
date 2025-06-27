@@ -16,6 +16,7 @@ def mostrar_jugador(entrenador_usuario, cedula_o_nombre):
         print(f"Teléfono: {jugador['telefono']}")
         print(f"Peso: {jugador['peso']} kg")
         print(f"Altura: {jugador['altura']} cm")
+        print(f"Posición: {jugador.get('posicion', 'No especificada')}")
         print(f"Antecedentes de lesión: {jugador['antecedentes']}")
         print(f"Asistencias registradas: {jugador['asistencias']}")
         print(f"Índice de masa corporal (IMC): {jugador.get('imc', 'No registrado')}")

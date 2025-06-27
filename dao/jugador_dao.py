@@ -3,7 +3,7 @@ import os
 from models.validaciones import (
     validar_cedula, validar_nombre, validar_apellido,
     validar_edad, validar_telefono, validar_peso,
-    validar_altura
+    validar_altura, validar_posicion
 )
 
 RUTA_JUGADORES = "dao/jugadores.json"
@@ -66,6 +66,25 @@ def registrar_jugador(entrenador_usuario):
 
     antecedentes = input("Antecedentes de lesión (si/no o descripción): ").strip()
 
+    # Solicitar posición en la cancha
+    posicion = input("Posición en la cancha (Base, Escolta, Alero, Ala-Pívot, Pívot): ").strip()
+    if not validar_posicion(posicion):
+        print("Posición no válida. Usando 'No especificada' por defecto.")
+        posicion = "No especificada"
+    else:
+        # Normalizar la posición con primera letra mayúscula
+        posicion_normalizada = posicion.lower().strip()
+        if posicion_normalizada == "base":
+            posicion = "Base"
+        elif posicion_normalizada == "escolta":
+            posicion = "Escolta"
+        elif posicion_normalizada == "alero":
+            posicion = "Alero"
+        elif posicion_normalizada in ["ala-pivot", "ala-pívot"]:
+            posicion = "Ala-Pívot"
+        elif posicion_normalizada in ["pivot", "pívot"]:
+            posicion = "Pívot"
+
     jugador = {
         "nombre": nombre,
         "apellido": apellido,
@@ -74,6 +93,7 @@ def registrar_jugador(entrenador_usuario):
         "peso": float(peso),
         "altura": float(altura),
         "antecedentes": antecedentes,
+        "posicion": posicion,
         "imc": imc,
         "asistencias": 0
     }
@@ -121,6 +141,25 @@ def modificar_jugador(entrenador_usuario):
     antecedentes = input(f"Antecedentes actuales ({jugador['antecedentes']}): ").strip()
     if antecedentes:
         jugador['antecedentes'] = antecedentes
+
+    posicion_actual = jugador.get('posicion', 'No especificada')
+    nueva_posicion = input(f"Posición actual ({posicion_actual}) - Opciones: Base, Escolta, Alero, Ala-Pívot, Pívot: ").strip()
+    if nueva_posicion:
+        if validar_posicion(nueva_posicion):
+            # Normalizar la posición
+            posicion_normalizada = nueva_posicion.lower().strip()
+            if posicion_normalizada == "base":
+                jugador['posicion'] = "Base"
+            elif posicion_normalizada == "escolta":
+                jugador['posicion'] = "Escolta"
+            elif posicion_normalizada == "alero":
+                jugador['posicion'] = "Alero"
+            elif posicion_normalizada in ["ala-pivot", "ala-pívot"]:
+                jugador['posicion'] = "Ala-Pívot"
+            elif posicion_normalizada in ["pivot", "pívot"]:
+                jugador['posicion'] = "Pívot"
+        else:
+            print("Posición no válida. Manteniendo posición actual.")
 
     peso = jugador.get('peso')
     altura_cm = jugador.get('altura')
