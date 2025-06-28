@@ -1,40 +1,39 @@
 import re
 
-def validar_cedula(cedula: str) -> bool:
-    cedula_limpia = cedula.replace("-", "").replace(" ", "")
-    patron = r'^001\d{6}\d{4}[A-Z]$'
-    return bool(re.match(patron, cedula_limpia.upper()))
+def validar_cedula(cedula):
+    return bool(re.fullmatch(r"001-\d{6}-\d{4}[A-Z]", cedula))
 
-def validar_nombre(nombre: str) -> bool:
-    return bool(nombre.strip()) and all(c.isalpha() or c.isspace() for c in nombre)
+def validar_nombre(nombre):
+    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúñÑ ]{2,50}", nombre.strip()))
 
-def validar_apellido(apellido: str) -> bool:
-    return validar_nombre(apellido)
+def validar_apellido(apellido):
+    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúñÑ ]{2,50}", apellido.strip()))
 
-def validar_edad(edad: str) -> bool:
-    if not edad.isdigit():
-        return False
-    val = int(edad)
-    return 5 <= val <= 100
-
-def validar_telefono(telefono: str) -> bool:
-    return telefono.isdigit() and len(telefono) == 8
-
-def validar_peso(peso: str) -> bool:
+def validar_edad(edad):
     try:
-        val = float(peso)
-        return 30 <= val <= 200
-    except ValueError:
+        edad = int(edad)
+        return 15 <= edad <= 50
+    except:
         return False
 
-def validar_altura(altura: str) -> bool:
+def validar_telefono(telefono):
+    return bool(re.fullmatch(r"\d{8}", telefono))
+
+def validar_peso(peso):
     try:
-        val = float(altura)
-        return 100 <= val <= 250
-    except ValueError:
+        peso = float(peso)
+        return 30 <= peso <= 200
+    except:
         return False
 
-def validar_antecedentes(antecedentes: str) -> bool:
-    return True
+def validar_altura(altura):
+    try:
+        altura = float(altura)
+        return 100 <= altura <= 250
+    except:
+        return False
 
+def validar_posicion(posicion):
+    posiciones = ['Base', 'Escolta', 'Alero', 'Ala-pivot', 'Pivot']
+    return posicion in posiciones
 

@@ -1,36 +1,47 @@
-import json
-import os
+import pickle
 
-RUTA_ENTRENADORES = "dao/entrenadores.json"
+class EntrenadorDAO:
+    _archivo = "entrenadores.bin"
 
-def cargar_entrenadores():
-    if not os.path.exists(RUTA_ENTRENADORES):
-        return {}
-    with open(RUTA_ENTRENADORES, "r", encoding="utf-8") as f:
-        return json.load(f)
+    @classmethod
+    def _cargar(cls):
+        try:
+            with open(cls._archivo, "rb") as f:
+                return pickle.load(f)
+        except (FileNotFoundError, EOFError):
+            return {}
 
-def guardar_entrenadores(entrenadores):
-    with open(RUTA_ENTRENADORES, "w", encoding="utf-8") as f:
-        json.dump(entrenadores, f, indent=4)
+    @classmethod
+    def _guardar(cls, datos):
+        with open(cls._archivo, "wb") as f:
+            pickle.dump(datos, f)
 
-def registrar_entrenador():
-    entrenadores = cargar_entrenadores()
-    usuario = input("Usuario: ").strip()
-    if usuario in entrenadores:
-        print("Usuario ya existe.")
-        return False
-    contrasena = input("Contraseña: ").strip()
-    entrenadores[usuario] = contrasena
-    guardar_entrenadores(entrenadores)
-    print(f"Entrenador {usuario} registrado.")
-    return True
+    @classmethod
+    def registrar(cls):
+        entrenadores = cls._cargar()
 
-def iniciar_sesion():
-    entrenadores = cargar_entrenadores()
-    usuario = input("Usuario: ").strip()
-    contrasena = input("Contraseña: ").strip()
-    if usuario in entrenadores and entrenadores[usuario] == contrasena:
-        print(f"Bienvenido, {usuario}!")
-        return usuario
-    print("Usuario o contraseña incorrectos.")
-    return None
+        usuario = input("Usuario: ").strip()
+        if usuario in entrenadores:
+            print("Usuario ya existe")
+            return
+
+        contrasena = input("Contraseña: ").strip()
+
+        entrenadores[usuario] = {"contrasena": contrasena}
+        cls._guardar(entrenadores)
+        print("Entrenador registrado")
+
+    @classmethod
+    def iniciar_sesion(cls):
+        entrenadores = cls._cargar()
+        usuario = input("Usuario: ").strip()
+        contrasena = input("Contraseña: ").strip()
+
+        if usuario in entrenadores:
+            datos = entrenadores[usuario]
+            if isinstance(datos, dict) and "contrasena" in datos and datos["contrasena"] == contrasena:
+                print(f"Bienvenido {usuario}")
+                return usuario
+
+        print("Usuario o contraseña incorrectos")
+        return None
