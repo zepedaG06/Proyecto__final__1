@@ -1,9 +1,12 @@
 import pickle
 from models.jugador import Jugador
 from models.validaciones import (
-    validar_cedula, validar_nombre, validar_apellido,
-    validar_edad, validar_telefono, validar_peso,
-    validar_altura, validar_posicion
+    validar_cedula, formatear_cedula,
+    validar_nombre, validar_apellido,
+    validar_edad, validar_telefono,
+    validar_peso, parsear_peso,
+    validar_altura, parsear_altura,
+    validar_posicion, formatear_posicion
 )
 
 class JugadorDAO:
@@ -30,6 +33,7 @@ class JugadorDAO:
 
         while True:
             cedula = input("Cédula (formato 001-XXXXXX-XXXXA): ").strip()
+            cedula = formatear_cedula(cedula)
             if not validar_cedula(cedula):
                 print("Cédula inválida.")
                 continue
@@ -38,7 +42,6 @@ class JugadorDAO:
                 continue
             break
 
-       
         while True:
             nombre = input("Nombre: ").strip()
             if not validar_nombre(nombre):
@@ -46,7 +49,6 @@ class JugadorDAO:
                 continue
             break
 
-        
         while True:
             apellido = input("Apellido: ").strip()
             if not validar_apellido(apellido):
@@ -54,7 +56,6 @@ class JugadorDAO:
                 continue
             break
 
-        
         while True:
             edad_input = input("Edad: ").strip()
             if not validar_edad(edad_input):
@@ -63,7 +64,6 @@ class JugadorDAO:
             edad = int(edad_input)
             break
 
-       
         while True:
             telefono = input("Teléfono (8 dígitos): ").strip()
             if not validar_telefono(telefono):
@@ -71,34 +71,30 @@ class JugadorDAO:
                 continue
             break
 
-        
         while True:
-            peso_input = input("Peso (30-200 kg): ").strip()
+            peso_input = input("Peso (30-200 kg, acepta coma decimal): ").strip()
             if not validar_peso(peso_input):
                 print("Peso inválido.")
                 continue
-            peso = float(peso_input)
+            peso = parsear_peso(peso_input)
             break
 
-        
         while True:
-            altura_input = input("Altura (100-250 cm): ").strip()
+            altura_input = input("Altura (100-250 cm o en metros, ej. 1.75): ").strip()
             if not validar_altura(altura_input):
                 print("Altura inválida.")
                 continue
-            altura = float(altura_input)
+            altura = parsear_altura(altura_input)
             break
 
         antecedentes = input("Antecedentes médicos: ").strip()
 
-        
-        posiciones = ['Base', 'Escolta', 'Alero', 'Ala-pívot', 'Pívot']
         while True:
             posicion_input = input("Posición (Base, Escolta, Alero, Ala-pívot, Pívot): ").strip()
-            posicion = next((p for p in posiciones if p.lower() == posicion_input.lower()), None)
-            if not posicion:
+            if not validar_posicion(posicion_input):
                 print("Posición inválida.")
                 continue
+            posicion = formatear_posicion(posicion_input)
             break
 
         jugador = Jugador(cedula, nombre, apellido, edad, telefono, peso, altura, antecedentes, posicion)
@@ -118,7 +114,6 @@ class JugadorDAO:
             nombre_completo = f"{jugador.nombre} {jugador.apellido}".lower()
             if nombre_completo == criterio_lower:
                return jugador
-
         return None
 
     @classmethod
@@ -142,7 +137,7 @@ class JugadorDAO:
                 jugador.asistencias = 0
             print(jugador)
             print("-" * 40)
-    
+
     @classmethod
     def modificar(cls, entrenador: str):
         jugadores = cls._cargar()
@@ -151,6 +146,7 @@ class JugadorDAO:
             return
 
         cedula = input("Cédula del jugador a modificar: ").strip()
+        cedula = formatear_cedula(cedula)
         if cedula not in jugadores[entrenador]:
             print("Jugador no encontrado")
             return
@@ -167,26 +163,53 @@ class JugadorDAO:
         nueva_posicion = input(f"Nueva posición [{jugador.posicion}]: ").strip()
         nuevos_antecedentes = input(f"Nuevos antecedentes [{jugador.antecedentes}]: ").strip()
 
-        if nuevo_nombre: jugador.nombre = nuevo_nombre
-        if nuevo_apellido: jugador.apellido = nuevo_apellido
-        if nueva_edad: jugador.edad = int(nueva_edad)
-        if nuevo_telefono: jugador.telefono = nuevo_telefono
-        if nuevo_peso: jugador.peso = float(nuevo_peso)
-        if nueva_altura: jugador.altura = float(nueva_altura)
+        if nuevo_nombre and validar_nombre(nuevo_nombre): 
+            jugador.nombre = nuevo_nombre
+        elif nuevo_nombre:
+            print("Nombre inválido, no se cambió.")
+
+        if nuevo_apellido and validar_apellido(nuevo_apellido):
+            jugador.apellido = nuevo_apellido
+        elif nuevo_apellido:
+            print("Apellido inválido, no se cambió.")
+
+        if nueva_edad:
+            if validar_edad(nueva_edad):
+                jugador.edad = int(nueva_edad)
+            else:
+                print("Edad inválida, no se cambió.")
+
+        if nuevo_telefono and validar_telefono(nuevo_telefono):
+            jugador.telefono = nuevo_telefono
+        elif nuevo_telefono:
+            print("Teléfono inválido, no se cambió.")
+
+        if nuevo_peso:
+            if validar_peso(nuevo_peso):
+                jugador.peso = parsear_peso(nuevo_peso)
+            else:
+                print("Peso inválido, no se cambió.")
+
+        if nueva_altura:
+            if validar_altura(nueva_altura):
+                jugador.altura = parsear_altura(nueva_altura)
+            else:
+                print("Altura inválida, no se cambió.")
+
         if nueva_posicion:
-            posiciones = ['Base', 'Escolta', 'Alero', 'Ala-pivot', 'Pivot']
-            posicion = next((p for p in posiciones if p.lower() == nueva_posicion.lower()), None)
-            if posicion:
-                jugador.posicion = posicion
+            if validar_posicion(nueva_posicion):
+                jugador.posicion = formatear_posicion(nueva_posicion)
             else:
                 print("Posición inválida, no se cambió.")
-        if nuevos_antecedentes: jugador.antecedentes = nuevos_antecedentes
+
+        if nuevos_antecedentes:
+            jugador.antecedentes = nuevos_antecedentes
 
         jugador._calcular_imc()
 
         cls._guardar(jugadores)
         print("Datos del jugador actualizados")
-    
+
     @classmethod
     def eliminar(cls, entrenador: str):
         jugadores = cls._cargar()
@@ -195,6 +218,7 @@ class JugadorDAO:
             return
 
         cedula = input("Cédula del jugador a eliminar: ").strip()
+        cedula = formatear_cedula(cedula)
         if cedula not in jugadores[entrenador]:
             print("Jugador no encontrado")
             return

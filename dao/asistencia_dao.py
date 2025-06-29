@@ -1,5 +1,6 @@
 import pickle
 from datetime import datetime
+from dao.jugador_dao import JugadorDAO
 
 class AsistenciaDAO:
     _archivo = "asistencias.bin"
@@ -18,16 +19,30 @@ class AsistenciaDAO:
             pickle.dump(datos, f)
 
     @classmethod
-    def registrar(cls, entrenador, cedula):
-        asistencias = cls._cargar()
-        key = f"{entrenador}_{cedula}"
-        fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
+    def registrar(cls, entrenador, cedula=None):
+        jugadores = JugadorDAO._cargar().get(entrenador, {})
+        if not jugadores:
+            print("No hay jugadores para registrar asistencia")
+            return
 
-        if key in asistencias:
-            asistencias[key].append(fecha)
-        else:
-            asistencias[key] = [fecha]
+        asistencias = cls._cargar()
+
+        for ced, jugador in jugadores.items():
+            while True:
+                respuesta = input(f"Registrar asistencia para {jugador.nombre} {jugador.apellido} (s/n): ").strip().lower()
+                if respuesta in ['s', 'n']:
+                    break
+                print("Respuesta inválida, ingresa 's' o 'n'.")
+            if respuesta == 's':
+                key = f"{entrenador}_{ced}"
+                fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
+                if key in asistencias:
+                    asistencias[key].append(fecha)
+                else:
+                    asistencias[key] = [fecha]
+                print(f"Asistencia registrada para {jugador.nombre} {jugador.apellido}")
+            else:
+                print(f"Asistencia NO registrada para {jugador.nombre} {jugador.apellido}")
 
         cls._guardar(asistencias)
-        print(f"Asistencia registrada (Total: {len(asistencias[key])})")
 

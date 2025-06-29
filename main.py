@@ -51,8 +51,7 @@ def main():
                 JugadorDAO.modificar(usuario)
             elif opcion == "4":
                 limpiar_pantalla()
-                cedula = input("Cédula del jugador: ").strip()
-                AsistenciaDAO.registrar(usuario, cedula)
+                AsistenciaDAO.registrar(usuario)
             elif opcion == "5":
                 limpiar_pantalla()
                 JugadorDAO.listar(usuario)
@@ -63,5 +62,4 @@ def main():
                 usuario = None
 
         input("\nPresione Enter para continuar...")
-
 main()
