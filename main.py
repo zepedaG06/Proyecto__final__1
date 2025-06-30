@@ -1,117 +1,86 @@
+# Importar las clases DAO para manejar datos de entrenadores
+from dao.entrenador_dao import EntrenadorDAO
+# Importar las clases DAO para manejar datos de jugadores
+from dao.jugador_dao import JugadorDAO
+# Importar las clases DAO para manejar datos de asistencias
+from dao.asistencia_dao import AsistenciaDAO
+# Importar módulo del sistema operativo para limpiar pantalla
 import os
-from dao.entrenador_dao import registrar_entrenador, iniciar_sesion
-from dao.jugador_dao import registrar_jugador, buscar_jugador, modificar_jugador, eliminar_jugador
-from dao.asistencia_dao import registrar_asistencia, listar_asistencias
 
+# Función para limpiar la pantalla de la consola
 def limpiar_pantalla():
+    # Ejecutar comando 'cls' en Windows o 'clear' en Unix/Linux/Mac
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def mostrar_jugador(entrenador_usuario, cedula_o_nombre):
-    cedula, jugador = buscar_jugador(entrenador_usuario, cedula_o_nombre)
-    if jugador:
-        print("\n--- DATOS DEL JUGADOR ---")
-        print(f"Cédula: {cedula}")
-        print(f"Nombre: {jugador['nombre']} {jugador['apellido']}")
-        print(f"Edad: {jugador['edad']} años")
-        print(f"Teléfono: {jugador['telefono']}")
-        print(f"Peso: {jugador['peso']} kg")
-        print(f"Altura: {jugador['altura']} cm")
-        print(f"Posición: {jugador.get('posicion', 'No especificada')}")
-        print(f"Antecedentes de lesión: {jugador['antecedentes']}")
-        print(f"Asistencias registradas: {jugador['asistencias']}")
-        print(f"Índice de masa corporal (IMC): {jugador.get('imc', 'No registrado')}")
-    else:
-        print("Jugador no encontrado.")
-
-def listar_jugadores(entrenador_usuario):
-    from dao.jugador_dao import cargar_jugadores
-    jugadores = cargar_jugadores()
-    if entrenador_usuario not in jugadores or not jugadores[entrenador_usuario]:
-        print("\nNo hay jugadores registrados para este entrenador.")
-        return
-    print("\n--- JUGADORES REGISTRADOS ---")
-    for cedula, j in jugadores[entrenador_usuario].items():
-        print(f"Cédula: {cedula} | Nombre: {j['nombre']} {j['apellido']}")
-
-def mostrar_menu():
-    print("""
-=== MENÚ ELITEBASKET ===
-1. Registrar nuevo jugador
-2. Buscar jugador
-3. Modificar jugador
-4. Registrar asistencia
-5. Listar todos los jugadores
-6. Eliminar jugador
-7. Salir
-""")
-
-def login():
+# Función principal del programa
+def main():
+    # Variable para almacenar el usuario logueado (None = no hay sesión activa)
+    usuario = None
+    # Bucle principal del programa que se ejecuta indefinidamente
     while True:
-        print("=== Bienvenido a EliteBasket ===")
-        print("1. Iniciar sesión")
-        print("2. Registrar nuevo entrenador")
-        print("3. Salir")
-        opcion = input("Seleccione una opción: ").strip()
-        if opcion == "1":
-            usuario = iniciar_sesion()
-            if usuario:
-                return usuario
-        elif opcion == "2":
-            registrar_entrenador()
-        elif opcion == "3":
-            exit()
-        else:
-            print("Opción inválida.")
-
-def main(usuario_actual):
-    limpiar_pantalla()
-    print(f"¡Bienvenido al Sistema EliteBasket, {usuario_actual}!")
-
-    while True:
-        mostrar_menu()
-        opcion = input("Seleccione una opción: ").strip()
-
-        if opcion == "1":
-            limpiar_pantalla()
-            print("--- Registro de nuevo jugador ---")
-            registrar_jugador(usuario_actual)
-
-        elif opcion == "2":
-            limpiar_pantalla()
-            print("--- Buscar jugador ---")
-            busqueda = input("Ingrese cédula o nombre completo: ").strip()
-            mostrar_jugador(usuario_actual, busqueda)
-
-        elif opcion == "3":
-            limpiar_pantalla()
-            print("--- Modificar jugador ---")
-            modificar_jugador(usuario_actual)
-
-        elif opcion == "4":
-            limpiar_pantalla()
-            print("--- Registrar asistencia ---")
-            cedula = input("Ingrese cédula del jugador: ").strip()
-            registrar_asistencia(usuario_actual, cedula)
-
-        elif opcion == "5":
-            limpiar_pantalla()
-            listar_jugadores(usuario_actual)
-
-        elif opcion == "6":
-            limpiar_pantalla()
-            print("--- Eliminar jugador ---")
-            eliminar_jugador(usuario_actual)
-
-        elif opcion == "7":
-            print("\n¡Gracias por usar EliteBasket! Hasta pronto.")
-            break
-
-        else:
-            print("Opción no válida. Intente nuevamente.")
-
-        input("\nPresione Enter para continuar...")
+        # Limpiar la pantalla antes de mostrar el menú
         limpiar_pantalla()
+        # Verificar si no hay usuario logueado
+        if not usuario:
+            # Mostrar el menú de inicio (sin sesión activa)
+            print("=== ELITEBASKET ===")
+            print("1. Iniciar sesión")
+            print("2. Registrar entrenador")
+            print("3. Salir")
+            # Leer la opción del usuario y quitar espacios en blanco
+            opcion = input("Opción: ").strip()
 
-if __name__ == "__main__":
-    usuario_actual = login()
-    main(usuario_actual)
+            # Evaluar la opción seleccionada
+            if opcion == "1":
+                # Intentar iniciar sesión y guardar el usuario si es exitoso
+                usuario = EntrenadorDAO.iniciar_sesion()
+            elif opcion == "2":
+                # Registrar un nuevo entrenador
+                EntrenadorDAO.registrar()
+            elif opcion == "3":
+                # Mostrar mensaje de despedida y salir del programa
+                print("¡Hasta pronto!")
+                break
+        else:
+            # Mostrar el menú principal (con sesión activa)
+            print(f"=== MENÚ ({usuario}) ===")
+            print("1. Registrar jugador")
+            print("2. Buscar jugador")
+            print("3. Modificar jugador")
+            print("4. Registrar asistencia")
+            print("5. Listar jugadores")
+            print("6. Eliminar jugador")
+            print("7. Cerrar sesión")
+
+            # Leer la opción del usuario y quitar espacios en blanco
+            opcion = input("Opción: ").strip()
+            # Evaluar la opción seleccionada en el menú principal
+            if opcion == "1":
+                # Limpiar pantalla y registrar un nuevo jugador
+                limpiar_pantalla()
+                JugadorDAO.registrar_jugador(usuario)
+            elif opcion == "2":
+                # Limpiar pantalla y buscar un jugador específico
+                limpiar_pantalla()
+                jugador = JugadorDAO.buscar_jugador(usuario)
+            elif opcion == "3":
+                # Limpiar pantalla y modificar datos de un jugador
+                limpiar_pantalla()
+                JugadorDAO.modificar_jugador(usuario)
+            elif opcion == "4":
+                # Limpiar pantalla y registrar asistencias
+                limpiar_pantalla()
+                AsistenciaDAO.registrar(usuario)
+            elif opcion == "5":
+                # Limpiar pantalla y mostrar lista de todos los jugadores
+                limpiar_pantalla()
+                JugadorDAO.listar(usuario)
+            elif opcion == "6":
+                # Limpiar pantalla y eliminar un jugador
+                limpiar_pantalla()
+                JugadorDAO.eliminar_jugador(usuario)
+            elif opcion == "7":
+                # Cerrar sesión poniendo usuario en None
+                usuario = None    
+# Ejecutar la función principal del programa
+main()

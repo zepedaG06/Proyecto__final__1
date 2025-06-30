@@ -1,36 +1,73 @@
-import json
-import os
+# Importar módulo pickle para serializar/deserializar objetos Python
+import pickle
 
-RUTA_ENTRENADORES = "dao/entrenadores.json"
+# Clase para manejar operaciones de datos (DAO) de entrenadores
+class EntrenadorDAO:
+    # Variable de clase que define el nombre del archivo donde se guardan los entrenadores
+    _archivo = "entrenadores.bin"
 
-def cargar_entrenadores():
-    if not os.path.exists(RUTA_ENTRENADORES):
-        return {}
-    with open(RUTA_ENTRENADORES, "r", encoding="utf-8") as f:
-        return json.load(f)
+    # Método de clase para cargar datos de entrenadores desde archivo
+    @classmethod
+    def _cargar(cls):
+        try:
+            # Abrir archivo en modo lectura binaria
+            with open(cls._archivo, "rb") as f:
+                # Deserializar y retornar el contenido del archivo
+                return pickle.load(f)
+        except (FileNotFoundError, EOFError):
+            # Si el archivo no existe o está vacío, retornar diccionario vacío
+            return {}
 
-def guardar_entrenadores(entrenadores):
-    with open(RUTA_ENTRENADORES, "w", encoding="utf-8") as f:
-        json.dump(entrenadores, f, indent=4)
+    # Método de clase para guardar datos de entrenadores en archivo
+    @classmethod
+    def _guardar(cls, datos):
+        # Abrir archivo en modo escritura binaria
+        with open(cls._archivo, "wb") as f:
+            # Serializar y guardar los datos en el archivo
+            pickle.dump(datos, f)
 
-def registrar_entrenador():
-    entrenadores = cargar_entrenadores()
-    usuario = input("Usuario: ").strip()
-    if usuario in entrenadores:
-        print("Usuario ya existe.")
-        return False
-    contrasena = input("Contraseña: ").strip()
-    entrenadores[usuario] = contrasena
-    guardar_entrenadores(entrenadores)
-    print(f"Entrenador {usuario} registrado.")
-    return True
+    # Método de clase para registrar un nuevo entrenador
+    @classmethod
+    def registrar(cls):
+        # Cargar la lista actual de entrenadores
+        entrenadores = cls._cargar()
 
-def iniciar_sesion():
-    entrenadores = cargar_entrenadores()
-    usuario = input("Usuario: ").strip()
-    contrasena = input("Contraseña: ").strip()
-    if usuario in entrenadores and entrenadores[usuario] == contrasena:
-        print(f"Bienvenido, {usuario}!")
-        return usuario
-    print("Usuario o contraseña incorrectos.")
-    return None
+        # Solicitar nombre de usuario y quitar espacios en blanco
+        usuario = input("Usuario: ").strip()
+        # Verificar si el usuario ya existe en el sistema
+        if usuario in entrenadores:
+            print("Usuario ya existe")
+            return
+
+        # Solicitar contraseña y quitar espacios en blanco
+        contrasena = input("Contraseña: ").strip()
+
+        # Agregar el nuevo entrenador al diccionario
+        entrenadores[usuario] = {"contrasena": contrasena}
+        # Guardar los datos actualizados en el archivo
+        cls._guardar(entrenadores)
+        print("Entrenador registrado")
+
+    # Método de clase para iniciar sesión de un entrenador
+    @classmethod
+    def iniciar_sesion(cls):
+        # Cargar la lista actual de entrenadores
+        entrenadores = cls._cargar()
+        # Solicitar credenciales del usuario
+        usuario = input("Usuario: ").strip()
+        contrasena = input("Contraseña: ").strip()
+
+        # Verificar si el usuario existe en el sistema
+        if usuario in entrenadores:
+            # Obtener los datos del usuario
+            datos = entrenadores[usuario]
+            # Verificar que los datos sean un diccionario y que la contraseña coincida
+            if isinstance(datos, dict) and "contrasena" in datos and datos["contrasena"] == contrasena:
+                print(f"Bienvenido {usuario}")
+                # Retornar el nombre de usuario si el login es exitoso
+                return usuario
+
+        # Mostrar mensaje de error si las credenciales son incorrectas
+        print("Usuario o contraseña incorrectos")
+        # Retornar None si el login falla
+        return None

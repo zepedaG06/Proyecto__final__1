@@ -1,63 +1,138 @@
+# Importar módulo para expresiones regulares (patrones de texto)
 import re
+# Importar módulo para manejo de caracteres Unicode (tildes, acentos)
+import unicodedata
 
-def validar_cedula(cedula: str) -> bool:
-    """
-    Valida cédula de identidad nicaragüense.
-    Formato: 001-DDMMYY-NNNNG donde:
-    - 001: Código de país (Nicaragua)
-    - DDMMYY: Fecha de nacimiento (día, mes, año)
-    - NNNN: Número secuencial
-    - G: Dígito verificador (A-Z)
-    """
-    cedula_limpia = cedula.replace("-", "").replace(" ", "")
-    # Patrón adaptado para sistema nicaragüense
-    patron = r'^001\d{6}\d{4}[A-Z]$'
-    return bool(re.match(patron, cedula_limpia.upper()))
+# Función para eliminar tildes y acentos de un texto
+def quitar_tildes(texto):
+    # Normalizar el texto a forma NFD (descomposición canónica)
+    # Filtrar solo caracteres que no sean marcas diacríticas (tildes/acentos)
+    # Unir todos los caracteres filtrados en una sola cadena
+    return ''.join(
+        c for c in unicodedata.normalize('NFD', texto)
+        if unicodedata.category(c) != 'Mn'
+    )
 
-def validar_nombre(nombre: str) -> bool:
-    return bool(nombre.strip()) and all(c.isalpha() or c.isspace() for c in nombre)
-
-def validar_apellido(apellido: str) -> bool:
-    return validar_nombre(apellido)
-
-def validar_edad(edad: str) -> bool:
-    if not edad.isdigit():
+# Función para validar formato de cédula dominicana
+def validar_cedula(cedula):
+    # Verificar que la cédula no esté vacía
+    if len(cedula) < 1:
         return False
-    val = int(edad)
-    return 5 <= val <= 100
+    # Formatear la cédula: todo en minúscula excepto la última letra en mayúscula
+    cedula = cedula[:-1] + cedula[-1].upper()
+    # Verificar que coincida con el patrón: 001-XXXXXX-XXXXA (donde X=dígito, A=letra)
+    return bool(re.fullmatch(r"001-\d{6}-\d{4}[A-Z]", cedula))
 
-def validar_telefono(telefono: str) -> bool:
-    """
-    Valida número telefónico nicaragüense.
-    Formato: 8 dígitos (sistema nacional)
-    Ejemplo: 85471234, 22501234
-    """
-    return telefono.isdigit() and len(telefono) == 8
+# Función para formatear una cédula poniendo la última letra en mayúscula
+def formatear_cedula(cedula): 
+    # Verificar que la cédula no esté vacía
+    if len(cedula) < 1:
+        return cedula
+    # Retornar la cédula con la última letra en mayúscula
+    return cedula[:-1] + cedula[-1].upper()
 
-def validar_peso(peso: str) -> bool:
+# Función para validar que un nombre sea válido
+def validar_nombre(nombre):
+    # Verificar que coincida con el patrón: solo letras, espacios y acentos, entre 2-50 caracteres
+    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúñÑ ]{2,50}", nombre.strip()))
+
+# Función para validar que un apellido sea válido
+def validar_apellido(apellido):
+    # Verificar que coincida con el patrón: solo letras, espacios y acentos, entre 2-50 caracteres
+    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúñÑ ]{2,50}", apellido.strip()))
+
+# Función para validar que una edad sea válida
+def validar_edad(edad):
     try:
-        val = float(peso)
-        return 30 <= val <= 200
-    except ValueError:
+        # Intentar convertir la edad a entero
+        edad = int(edad)
+        # Verificar que esté en el rango de 15 a 50 años
+        return 15 <= edad <= 50
+    except:
+        # Si hay error en la conversión, retornar False
         return False
 
-def validar_altura(altura: str) -> bool:
+# Función para validar que un teléfono sea válido
+def validar_telefono(telefono):
+    # Verificar que coincida con el patrón: exactamente 8 dígitos
+    return bool(re.fullmatch(r"\d{8}", telefono))
+
+# Función para validar que un peso sea válido
+def validar_peso(peso):
     try:
-        val = float(altura)
-        return 100 <= val <= 250
-    except ValueError:
+        # Reemplazar comas por puntos para el formato decimal
+        peso = peso.replace(',', '.')
+        # Convertir a número decimal
+        peso = float(peso)
+        # Verificar que esté en el rango de 30 a 200 kg
+        return 30 <= peso <= 200
+    except:
+        # Si hay error en la conversión, retornar False
         return False
 
-def validar_antecedentes(antecedentes: str) -> bool:
-    return True
+# Función para convertir un peso de texto a número decimal
+def parsear_peso(peso):
+    # Reemplazar comas por puntos para el formato decimal
+    peso = peso.replace(',', '.')
+    # Convertir y retornar como número decimal
+    return float(peso)
 
-def validar_posicion(posicion: str) -> bool:
-    """
-    Valida la posición del jugador en la cancha de baloncesto.
-    Posiciones válidas: Base, Escolta, Alero, Ala-Pívot, Pívot
-    """
-    posiciones_validas = {
-        "base", "escolta", "alero", "ala-pivot", "ala-pívot", "pivot", "pívot"
+# Función para validar que una altura sea válida
+def validar_altura(altura):
+    try:
+        # Reemplazar comas por puntos para el formato decimal
+        altura = altura.replace(',', '.')
+        # Convertir a número decimal
+        altura_f = float(altura)
+        # Si la altura es menor a 10, asumir que está en metros y convertir a cm
+        if altura_f < 10:
+            altura_f *= 100
+        # Verificar que esté en el rango de 100 a 250 cm
+        return 100 <= altura_f <= 250
+    except:
+        # Si hay error en la conversión, retornar False
+        return False
+
+# Función para convertir una altura de texto a número decimal en centímetros
+def parsear_altura(altura):
+    # Reemplazar comas por puntos para el formato decimal
+    altura = altura.replace(',', '.')
+    # Convertir a número decimal
+    altura_f = float(altura)
+    # Si la altura es menor a 10, asumir que está en metros y convertir a cm
+    if altura_f < 10:
+        altura_f *= 100
+    # Retornar la altura en centímetros
+    return altura_f
+
+# Función para validar que una posición de básquet sea válida
+def validar_posicion(posicion):
+    # Lista de posiciones válidas en básquetbol
+    posiciones_validas = ["Base", "Escolta", "Alero", "Ala-Pívot", "Pívot"]
+    # Normalizar la posición: quitar tildes y convertir a minúscula
+    posicion_norm = quitar_tildes(posicion.lower())
+    # Verificar si la posición normalizada está en la lista de válidas
+    return posicion_norm in posiciones_validas
+
+# Función para formatear una posición a su forma correcta
+def formatear_posicion(posicion):
+    # Diccionario de mapeo de posiciones normalizadas a formato correcto
+    map_pos = {
+        'base': 'Base',
+        'escolta': 'Escolta',
+        'alero': 'Alero',
+        'ala-pivot': 'Ala-pívot',
+        'pivot': 'Pívot'
     }
-    return posicion.lower().strip() in posiciones_validas
+    # Normalizar la posición: quitar tildes y convertir a minúscula
+    posicion_norm = quitar_tildes(posicion.lower())
+    # Buscar en el diccionario y retornar la forma correcta, o None si no existe
+    return map_pos.get(posicion_norm, None)
+
+# Función para validar que los antecedentes médicos sean válidos
+def validar_antecedentes(antecedentes):
+    # Limpiar espacios y convertir a minúscula
+    antecedentes = antecedentes.strip().lower()
+    # Validar: debe ser "si", "no" o tener al menos 2 caracteres de descripción
+    return antecedentes in ["si", "no"] or len(antecedentes) >= 2
 
