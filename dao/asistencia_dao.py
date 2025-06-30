@@ -1,6 +1,5 @@
 import pickle
 from datetime import datetime
-from dao.jugador_dao import JugadorDAO
 
 class AsistenciaDAO:
     _archivo = "asistencias.bin"
@@ -20,7 +19,9 @@ class AsistenciaDAO:
 
     @classmethod
     def registrar(cls, entrenador, cedula=None):
-        jugadores = JugadorDAO._cargar().get(entrenador, {})
+        from dao.jugador_dao import JugadorDAO 
+
+        jugadores = JugadorDAO.cargar_jugadores().get(entrenador, {})
         if not jugadores:
             print("No hay jugadores para registrar asistencia")
             return
@@ -45,4 +46,14 @@ class AsistenciaDAO:
                 print(f"Asistencia NO registrada para {jugador.nombre} {jugador.apellido}")
 
         cls._guardar(asistencias)
+
+    @classmethod
+    def obtener_asistencias_y_ultima(cls, entrenador, cedula):
+        asistencias = cls._cargar()
+        key = f"{entrenador}_{cedula}"
+        if key in asistencias and asistencias[key]:
+            total = len(asistencias[key])
+            ultima_fecha = asistencias[key][-1]
+            return total, ultima_fecha
+        return 0, None
 

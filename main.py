@@ -37,18 +37,13 @@ def main():
             opcion = input("Opción: ").strip()
             if opcion == "1":
                 limpiar_pantalla()
-                JugadorDAO.registrar(usuario)
+                JugadorDAO.registrar_jugador(usuario)
             elif opcion == "2":
                 limpiar_pantalla()
-                criterio = input("Ingrese cédula o nombre completo: ").strip()
-                jugador = JugadorDAO.buscar(usuario, criterio)
-                if jugador:
-                    print(jugador)
-                else:
-                    print("No encontrado")
+                jugador = JugadorDAO.buscar_jugador(usuario)
             elif opcion == "3":
                 limpiar_pantalla()
-                JugadorDAO.modificar(usuario)
+                JugadorDAO.modificar_jugador(usuario)
             elif opcion == "4":
                 limpiar_pantalla()
                 AsistenciaDAO.registrar(usuario)
@@ -57,9 +52,7 @@ def main():
                 JugadorDAO.listar(usuario)
             elif opcion == "6":
                 limpiar_pantalla()
-                JugadorDAO.eliminar(usuario)
+                JugadorDAO.eliminar_jugador(usuario)
             elif opcion == "7":
-                usuario = None
-
-        input("\nPresione Enter para continuar...")
+                usuario = None    
 main()

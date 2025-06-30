@@ -13,7 +13,7 @@ def validar_cedula(cedula):
     cedula = cedula[:-1] + cedula[-1].upper()
     return bool(re.fullmatch(r"001-\d{6}-\d{4}[A-Z]", cedula))
 
-def formatear_cedula(cedula):
+def formatear_cedula(cedula): 
     if len(cedula) < 1:
         return cedula
     return cedula[:-1] + cedula[-1].upper()
@@ -64,7 +64,7 @@ def parsear_altura(altura):
     return altura_f
 
 def validar_posicion(posicion):
-    posiciones_validas = ['base', 'escolta', 'alero', 'ala-pivot', 'pivot']
+    posiciones_validas = ["Base", "Escolta", "Alero", "Ala-Pívot", "Pívot"]
     posicion_norm = quitar_tildes(posicion.lower())
     return posicion_norm in posiciones_validas
 
@@ -78,4 +78,8 @@ def formatear_posicion(posicion):
     }
     posicion_norm = quitar_tildes(posicion.lower())
     return map_pos.get(posicion_norm, None)
+
+def validar_antecedentes(antecedentes):
+    antecedentes = antecedentes.strip().lower()
+    return antecedentes in ["si", "no"] or len(antecedentes) >= 2
 

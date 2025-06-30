@@ -1,232 +1,220 @@
 import pickle
+import os
 from models.jugador import Jugador
 from models.validaciones import (
-    validar_cedula, formatear_cedula,
-    validar_nombre, validar_apellido,
-    validar_edad, validar_telefono,
-    validar_peso, parsear_peso,
-    validar_altura, parsear_altura,
-    validar_posicion, formatear_posicion
+    validar_cedula, validar_nombre, validar_apellido,
+    validar_edad, validar_telefono, validar_peso,
+    validar_altura, validar_antecedentes, validar_posicion, formatear_posicion, formatear_cedula
 )
 
+JUGADORES_FILE = "jugadores.bin"
+
 class JugadorDAO:
-    _archivo = "jugadores.bin"
 
-    @classmethod
-    def _cargar(cls):
-        try:
-            with open(cls._archivo, "rb") as f:
-                return pickle.load(f)
-        except (FileNotFoundError, EOFError):
-            return {}
+    @staticmethod
+    def cargar_jugadores():
+        if os.path.exists(JUGADORES_FILE):
+            with open(JUGADORES_FILE, "rb") as f:
+                jugadores = pickle.load(f)
+                for entrenador in jugadores:
+                    jugadores_entrenador = jugadores[entrenador]
+                    ceds_correctas = {}
+                    for cedula, jugador in jugadores_entrenador.items():
+                        cedula_formateada = formatear_cedula(cedula)
+                        ceds_correctas[cedula_formateada] = jugador
+                    jugadores[entrenador] = ceds_correctas
+                return jugadores
+        return {}
 
-    @classmethod
-    def _guardar(cls, datos):
-        with open(cls._archivo, "wb") as f:
-            pickle.dump(datos, f)
+    @staticmethod
+    def guardar_jugadores(jugadores):
+        with open(JUGADORES_FILE, "wb") as f:
+            pickle.dump(jugadores, f)
 
-    @classmethod
-    def registrar(cls, entrenador: str):
-        jugadores = cls._cargar()
-        if entrenador not in jugadores:
-            jugadores[entrenador] = {}
+    @staticmethod
+    def registrar_jugador(entrenador_usuario):
+        jugadores = JugadorDAO.cargar_jugadores()
+        if entrenador_usuario not in jugadores:
+            jugadores[entrenador_usuario] = {}
 
         while True:
-            cedula = input("Cédula (formato 001-XXXXXX-XXXXA): ").strip()
-            cedula = formatear_cedula(cedula)
-            if not validar_cedula(cedula):
-                print("Cédula inválida.")
-                continue
-            if cedula in jugadores[entrenador]:
-                print("Cédula ya registrada")
-                continue
-            break
+            cedula = input("Cédula: ").strip()
+            cedula = formatear_cedula(cedula) 
+            if validar_cedula(cedula) and cedula not in jugadores[entrenador_usuario]:
+                break
+            print("Cédula no válida o ya existente.")
 
         while True:
             nombre = input("Nombre: ").strip()
-            if not validar_nombre(nombre):
-                print("Nombre inválido.")
-                continue
-            break
+            if validar_nombre(nombre):
+                break
+            print("Nombre no válido.")
 
         while True:
             apellido = input("Apellido: ").strip()
-            if not validar_apellido(apellido):
-                print("Apellido inválido.")
-                continue
-            break
+            if validar_apellido(apellido):
+                break
+            print("Apellido no válido.")
 
         while True:
-            edad_input = input("Edad: ").strip()
-            if not validar_edad(edad_input):
-                print("Edad inválida. Debe estar entre 15 y 50.")
-                continue
-            edad = int(edad_input)
-            break
+            edad = input("Edad: ").strip()
+            if validar_edad(edad):
+                edad = int(edad)
+                break
+            print("Edad no válida.")
 
         while True:
             telefono = input("Teléfono (8 dígitos): ").strip()
-            if not validar_telefono(telefono):
-                print("Teléfono inválido.")
-                continue
-            break
+            if validar_telefono(telefono):
+                break
+            print("Teléfono no válido.")
 
         while True:
-            peso_input = input("Peso (30-200 kg, acepta coma decimal): ").strip()
-            if not validar_peso(peso_input):
-                print("Peso inválido.")
-                continue
-            peso = parsear_peso(peso_input)
-            break
+            peso = input("Peso (kg): ").strip()
+            if validar_peso(peso):
+                peso = float(peso.replace(',', '.'))
+                break
+            print("Peso no válido.")
 
         while True:
-            altura_input = input("Altura (100-250 cm o en metros, ej. 1.75): ").strip()
-            if not validar_altura(altura_input):
-                print("Altura inválida.")
-                continue
-            altura = parsear_altura(altura_input)
-            break
+            altura = input("Altura (m o cm): ").strip()
+            if validar_altura(altura):
+                altura = float(altura.replace(',', '.'))
+                if altura < 10:
+                    altura *= 100
+                break
+            print("Altura no válida.")
 
-        antecedentes = input("Antecedentes médicos: ").strip()
+        antecedentes = input("Antecedentes de lesión (si/no o descripción): ").strip()
+        if not validar_antecedentes(antecedentes):
+            print("Antecedentes inválidos. Se guardará como 'No especificado'.")
+            antecedentes = "No especificado"
 
         while True:
-            posicion_input = input("Posición (Base, Escolta, Alero, Ala-pívot, Pívot): ").strip()
-            if not validar_posicion(posicion_input):
-                print("Posición inválida.")
-                continue
-            posicion = formatear_posicion(posicion_input)
-            break
-
+            posicion_ingresada = input("Posición (Base, Escolta, Alero, Ala-Pívot, Pívot): ").strip()
+            posicion_formateada = formatear_posicion(posicion_ingresada)
+            if posicion_formateada:
+                posicion = posicion_formateada
+                break
+            print("Posición no válida. Intente de nuevo.")
         jugador = Jugador(cedula, nombre, apellido, edad, telefono, peso, altura, antecedentes, posicion)
-        jugadores[entrenador][cedula] = jugador
-        cls._guardar(jugadores)
-        print("Jugador registrado")
+        jugadores[entrenador_usuario][cedula] = jugador
+        JugadorDAO.guardar_jugadores(jugadores)
+        print("Jugador registrado correctamente.")
 
-    @classmethod
-    def buscar(cls, entrenador: str, criterio: str) -> Jugador:
-        jugadores = cls._cargar().get(entrenador, {})
-        criterio = criterio.strip()
-        for cedula, jugador in jugadores.items():
-            if cedula.lower() == criterio.lower():
-                return jugador
-        criterio_lower = criterio.lower()
-        for jugador in jugadores.values():
+    @staticmethod
+    def buscar_jugador(entrenador_usuario):
+        from dao.asistencia_dao import AsistenciaDAO  
+        jugadores = JugadorDAO.cargar_jugadores()
+        if entrenador_usuario not in jugadores:
+            print("No hay jugadores registrados.")
+            input("Presione Enter para continuar...")
+            return None
+
+        consulta = input("Ingrese cédula o nombre completo: ").strip().lower()
+        for cedula, jugador in jugadores[entrenador_usuario].items():
             nombre_completo = f"{jugador.nombre} {jugador.apellido}".lower()
-            if nombre_completo == criterio_lower:
-               return jugador
+            if cedula.lower() == consulta or nombre_completo == consulta:
+                print("\n=== DATOS DEL JUGADOR ===")
+                print(f"Cédula: {jugador.cedula}")
+                print(f"Nombre: {jugador.nombre} {jugador.apellido}")
+                print(f"Edad: {jugador.edad} años | Teléfono: {jugador.telefono}")
+                print(f"Peso: {jugador.peso}kg | Altura: {jugador.altura}cm")
+                print(f"Posición: {jugador.posicion}")
+                print(f"IMC: {jugador.imc:.2f}")
+
+                total_asistencias, ultima_fecha = AsistenciaDAO.obtener_asistencias_y_ultima(entrenador_usuario, cedula)
+                if ultima_fecha:
+                    print(f"Asistencias: {total_asistencias} (última: {ultima_fecha})")
+                else:
+                    print(f"Asistencias: {total_asistencias}")
+
+                print(f"Antecedentes: {jugador.antecedentes}")
+                print("==============================\n")
+                input("Presione Enter para continuar...")
+                return jugador
+
+        print("Jugador no encontrado.")
+        input("Presione Enter para continuar...")
         return None
 
-    @classmethod
-    def listar(cls, entrenador: str):
-        jugadores = cls._cargar().get(entrenador, {})
-        if not jugadores:
-            print("No hay jugadores registrados")
-            return
-        try:
-            with open("asistencias.bin", "rb") as f:
-                asistencias = pickle.load(f)
-        except (FileNotFoundError, EOFError):
-            asistencias = {}
-
-        print(f"\n=== JUGADORES DE {entrenador.upper()} ===")
-        for cedula, jugador in jugadores.items():
-            key = f"{entrenador}_{cedula}"
-            if key in asistencias:
-                jugador.asistencias = len(asistencias[key])
-            else:
-                jugador.asistencias = 0
-            print(jugador)
-            print("-" * 40)
-
-    @classmethod
-    def modificar(cls, entrenador: str):
-        jugadores = cls._cargar()
-        if entrenador not in jugadores or not jugadores[entrenador]:
-            print("No hay jugadores para modificar")
+    @staticmethod
+    def modificar_jugador(entrenador_usuario):
+        jugadores = JugadorDAO.cargar_jugadores()
+        if entrenador_usuario not in jugadores:
+            print("No hay jugadores registrados.")
+            input("Presione Enter para continuar...")
             return
 
-        cedula = input("Cédula del jugador a modificar: ").strip()
-        cedula = formatear_cedula(cedula)
-        if cedula not in jugadores[entrenador]:
-            print("Jugador no encontrado")
+        cedula = input("Ingrese cédula del jugador a modificar: ").strip()
+        cedula = formatear_cedula(cedula) 
+        if cedula not in jugadores[entrenador_usuario]:
+            print("Jugador no encontrado.")
+            input("Presione Enter para continuar...")
             return
 
-        jugador = jugadores[entrenador][cedula]
-        print("Deje en blanco si no desea modificar ese dato.\n")
+        jugador = jugadores[entrenador_usuario][cedula]
 
-        nuevo_nombre = input(f"Nuevo nombre [{jugador.nombre}]: ").strip()
-        nuevo_apellido = input(f"Nuevo apellido [{jugador.apellido}]: ").strip()
-        nueva_edad = input(f"Nueva edad [{jugador.edad}]: ").strip()
-        nuevo_telefono = input(f"Nuevo teléfono [{jugador.telefono}]: ").strip()
-        nuevo_peso = input(f"Nuevo peso [{jugador.peso}]: ").strip()
-        nueva_altura = input(f"Nueva altura [{jugador.altura}]: ").strip()
-        nueva_posicion = input(f"Nueva posición [{jugador.posicion}]: ").strip()
-        nuevos_antecedentes = input(f"Nuevos antecedentes [{jugador.antecedentes}]: ").strip()
-
-        if nuevo_nombre and validar_nombre(nuevo_nombre): 
-            jugador.nombre = nuevo_nombre
-        elif nuevo_nombre:
-            print("Nombre inválido, no se cambió.")
-
-        if nuevo_apellido and validar_apellido(nuevo_apellido):
-            jugador.apellido = nuevo_apellido
-        elif nuevo_apellido:
-            print("Apellido inválido, no se cambió.")
-
-        if nueva_edad:
-            if validar_edad(nueva_edad):
-                jugador.edad = int(nueva_edad)
-            else:
-                print("Edad inválida, no se cambió.")
-
+        nuevo_telefono = input(f"Teléfono actual ({jugador.telefono}): ").strip()
         if nuevo_telefono and validar_telefono(nuevo_telefono):
             jugador.telefono = nuevo_telefono
-        elif nuevo_telefono:
-            print("Teléfono inválido, no se cambió.")
 
-        if nuevo_peso:
-            if validar_peso(nuevo_peso):
-                jugador.peso = parsear_peso(nuevo_peso)
-            else:
-                print("Peso inválido, no se cambió.")
+        nuevo_peso = input(f"Peso actual ({jugador.peso} kg): ").strip()
+        if nuevo_peso and validar_peso(nuevo_peso):
+            jugador.peso = float(nuevo_peso.replace(',', '.'))
 
-        if nueva_altura:
-            if validar_altura(nueva_altura):
-                jugador.altura = parsear_altura(nueva_altura)
-            else:
-                print("Altura inválida, no se cambió.")
+        nueva_altura = input(f"Altura actual ({jugador.altura} cm): ").strip()
+        if nueva_altura and validar_altura(nueva_altura):
+            altura_f = float(nueva_altura.replace(',', '.'))
+            if altura_f < 10:
+                altura_f *= 100
+            jugador.altura = altura_f
 
-        if nueva_posicion:
-            if validar_posicion(nueva_posicion):
-                jugador.posicion = formatear_posicion(nueva_posicion)
-            else:
-                print("Posición inválida, no se cambió.")
+        antecedentes = input(f"Antecedentes actuales ({jugador.antecedentes}): ").strip()
+        if antecedentes and validar_antecedentes(antecedentes):
+            jugador.antecedentes = antecedentes
 
-        if nuevos_antecedentes:
-            jugador.antecedentes = nuevos_antecedentes
+        nueva_posicion = input(f"Posición actual ({jugador.posicion}): ").strip()
+        if nueva_posicion and validar_posicion(nueva_posicion):
+            jugador.posicion = nueva_posicion
 
-        jugador._calcular_imc()
+        jugador.imc = jugador.calcular_imc()
 
-        cls._guardar(jugadores)
-        print("Datos del jugador actualizados")
+        JugadorDAO.guardar_jugadores(jugadores)
+        print("Datos actualizados correctamente.")
+        input("Presione Enter para continuar...")
 
-    @classmethod
-    def eliminar(cls, entrenador: str):
-        jugadores = cls._cargar()
-        if entrenador not in jugadores or not jugadores[entrenador]:
-            print("No hay jugadores para eliminar")
+    @staticmethod
+    def eliminar_jugador(entrenador_usuario):
+        jugadores = JugadorDAO.cargar_jugadores()
+        if entrenador_usuario not in jugadores:
+            print("No hay jugadores registrados.")
+            input("Presione Enter para continuar...")
             return
 
-        cedula = input("Cédula del jugador a eliminar: ").strip()
-        cedula = formatear_cedula(cedula)
-        if cedula not in jugadores[entrenador]:
-            print("Jugador no encontrado")
-            return
-
-        confirmacion = input(f"¿Estás seguro de eliminar a {jugadores[entrenador][cedula].nombre}? (s/n): ").strip().lower()
-        if confirmacion == "s":
-            del jugadores[entrenador][cedula]
-            cls._guardar(jugadores)
-            print("Jugador eliminado")
+        cedula = input("Ingrese la cédula del jugador a eliminar: ").strip()
+        cedula = formatear_cedula(cedula) 
+        if cedula in jugadores[entrenador_usuario]:
+            confirmacion = input(f"¿Está seguro de eliminar al jugador {jugadores[entrenador_usuario][cedula].nombre}? (s/n): ").strip().lower()
+            if confirmacion == "s":
+                del jugadores[entrenador_usuario][cedula]
+                JugadorDAO.guardar_jugadores(jugadores)
+                print("Jugador eliminado correctamente.")
         else:
-            print("Operación cancelada")
+            print("Jugador no encontrado.")
+        input("Presione Enter para continuar...")
+
+
+    @staticmethod
+    def listar(entrenador_usuario):
+        jugadores = JugadorDAO.cargar_jugadores()
+        if entrenador_usuario not in jugadores or not jugadores[entrenador_usuario]:
+            print("No hay jugadores registrados.")
+            input("Presione Enter para continuar...")
+            return
+
+        print(f"\n=== Lista de jugadores del entrenador {entrenador_usuario} ===")
+        for jugador in jugadores[entrenador_usuario].values():
+            print(jugador)
+            print("-" * 30)
+        input("Presione Enter para continuar...")
