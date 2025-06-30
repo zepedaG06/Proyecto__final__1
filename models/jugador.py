@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Definir la clase Jugador que representa a un jugador de básquet
 class Jugador:
     # Constructor que inicializa un objeto Jugador con todos sus atributos
@@ -39,29 +38,6 @@ class Jugador:
     # Método especial para convertir el objeto a string (representación textual)
     def __str__(self):
         # Retornar una cadena formateada con todos los datos del jugador
-=======
-class Jugador:
-    def __init__(self, cedula, nombre, apellido, edad, telefono, peso, altura, antecedentes, posicion):
-        self.cedula = cedula
-        self.nombre = nombre
-        self.apellido = apellido
-        self.edad = edad
-        self.telefono = telefono
-        self.peso = peso          
-        self.altura = altura      
-        self.antecedentes = antecedentes
-        self.posicion = posicion
-        self.imc = self.calcular_imc()  
-
-    def calcular_imc(self):
-        altura_m = self.altura / 100  
-        if altura_m > 0:
-            return self.peso / (altura_m ** 2)
-        else:
-            return 0.0
-
-    def __str__(self):
->>>>>>> b6f705b77ef221602d9b51533faaa2621a2172cd
         return (f"\n=== DATOS DEL JUGADOR ===\n"
                 f"Cédula: {self.cedula}\n"
                 f"Nombre: {self.nombre} {self.apellido}\n"
