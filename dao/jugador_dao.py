@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Importar módulo pickle para serializar/deserializar objetos Python
 import pickle
 # Importar módulo os para operaciones del sistema operativo
@@ -5,12 +6,18 @@ import os
 # Importar la clase Jugador desde el módulo models
 from models.jugador import Jugador
 # Importar todas las funciones de validación necesarias
+=======
+import pickle
+import os
+from models.jugador import Jugador
+>>>>>>> b6f705b77ef221602d9b51533faaa2621a2172cd
 from models.validaciones import (
     validar_cedula, validar_nombre, validar_apellido,
     validar_edad, validar_telefono, validar_peso,
     validar_altura, validar_antecedentes, validar_posicion, formatear_posicion, formatear_cedula
 )
 
+<<<<<<< HEAD
 # Constante que define el nombre del archivo donde se guardan los jugadores
 JUGADORES_FILE = "jugadores.bin"
 
@@ -51,6 +58,30 @@ class JugadorDAO:
         # Abrir archivo en modo escritura binaria
         with open(JUGADORES_FILE, "wb") as f:
             # Serializar y guardar los datos en el archivo
+=======
+JUGADORES_FILE = "jugadores.bin"
+
+class JugadorDAO:
+
+    @staticmethod
+    def cargar_jugadores():
+        if os.path.exists(JUGADORES_FILE):
+            with open(JUGADORES_FILE, "rb") as f:
+                jugadores = pickle.load(f)
+                for entrenador in jugadores:
+                    jugadores_entrenador = jugadores[entrenador]
+                    ceds_correctas = {}
+                    for cedula, jugador in jugadores_entrenador.items():
+                        cedula_formateada = formatear_cedula(cedula)
+                        ceds_correctas[cedula_formateada] = jugador
+                    jugadores[entrenador] = ceds_correctas
+                return jugadores
+        return {}
+
+    @staticmethod
+    def guardar_jugadores(jugadores):
+        with open(JUGADORES_FILE, "wb") as f:
+>>>>>>> b6f705b77ef221602d9b51533faaa2621a2172cd
             pickle.dump(jugadores, f)
 
     @staticmethod
