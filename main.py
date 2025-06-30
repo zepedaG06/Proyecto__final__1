@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Importar las clases DAO para manejar datos de entrenadores
 from dao.entrenador_dao import EntrenadorDAO
 # Importar las clases DAO para manejar datos de jugadores
@@ -6,11 +5,6 @@ from dao.jugador_dao import JugadorDAO
 # Importar las clases DAO para manejar datos de asistencias
 from dao.asistencia_dao import AsistenciaDAO
 # Importar módulo del sistema operativo para limpiar pantalla
-=======
-from dao.entrenador_dao import EntrenadorDAO
-from dao.jugador_dao import JugadorDAO
-from dao.asistencia_dao import AsistenciaDAO
->>>>>>> b6f705b77ef221602d9b51533faaa2621a2172cd
 import os
 
 # Función para limpiar la pantalla de la consola
@@ -18,7 +12,6 @@ def limpiar_pantalla():
     # Ejecutar comando 'cls' en Windows o 'clear' en Unix/Linux/Mac
     os.system('cls' if os.name == 'nt' else 'clear')
 
-<<<<<<< HEAD
 # Función principal del programa
 def main():
     # Variable para almacenar el usuario logueado (None = no hay sesión activa)
@@ -30,18 +23,10 @@ def main():
         # Verificar si no hay usuario logueado
         if not usuario:
             # Mostrar el menú de inicio (sin sesión activa)
-=======
-def main():
-    usuario = None
-    while True:
-        limpiar_pantalla()
-        if not usuario:
->>>>>>> b6f705b77ef221602d9b51533faaa2621a2172cd
             print("=== ELITEBASKET ===")
             print("1. Iniciar sesión")
             print("2. Registrar entrenador")
             print("3. Salir")
-<<<<<<< HEAD
             # Leer la opción del usuario y quitar espacios en blanco
             opcion = input("Opción: ").strip()
 
@@ -58,18 +43,6 @@ def main():
                 break
         else:
             # Mostrar el menú principal (con sesión activa)
-=======
-            opcion = input("Opción: ").strip()
-
-            if opcion == "1":
-                usuario = EntrenadorDAO.iniciar_sesion()
-            elif opcion == "2":
-                EntrenadorDAO.registrar()
-            elif opcion == "3":
-                print("¡Hasta pronto!")
-                break
-        else:
->>>>>>> b6f705b77ef221602d9b51533faaa2621a2172cd
             print(f"=== MENÚ ({usuario}) ===")
             print("1. Registrar jugador")
             print("2. Buscar jugador")
@@ -79,7 +52,6 @@ def main():
             print("6. Eliminar jugador")
             print("7. Cerrar sesión")
 
-<<<<<<< HEAD
             # Leer la opción del usuario y quitar espacios en blanco
             opcion = input("Opción: ").strip()
             # Evaluar la opción seleccionada en el menú principal
@@ -112,27 +84,3 @@ def main():
                 usuario = None    
 # Ejecutar la función principal del programa
 main()
-=======
-            opcion = input("Opción: ").strip()
-            if opcion == "1":
-                limpiar_pantalla()
-                JugadorDAO.registrar_jugador(usuario)
-            elif opcion == "2":
-                limpiar_pantalla()
-                jugador = JugadorDAO.buscar_jugador(usuario)
-            elif opcion == "3":
-                limpiar_pantalla()
-                JugadorDAO.modificar_jugador(usuario)
-            elif opcion == "4":
-                limpiar_pantalla()
-                AsistenciaDAO.registrar(usuario)
-            elif opcion == "5":
-                limpiar_pantalla()
-                JugadorDAO.listar(usuario)
-            elif opcion == "6":
-                limpiar_pantalla()
-                JugadorDAO.eliminar_jugador(usuario)
-            elif opcion == "7":
-                usuario = None    
-main()
->>>>>>> b6f705b77ef221602d9b51533faaa2621a2172cd

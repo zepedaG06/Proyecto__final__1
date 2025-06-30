@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Importar módulo pickle para serializar/deserializar objetos Python
 import pickle
 
@@ -36,36 +35,10 @@ class EntrenadorDAO:
         # Solicitar nombre de usuario y quitar espacios en blanco
         usuario = input("Usuario: ").strip()
         # Verificar si el usuario ya existe en el sistema
-=======
-import pickle
-
-class EntrenadorDAO:
-    _archivo = "entrenadores.bin"
-
-    @classmethod
-    def _cargar(cls):
-        try:
-            with open(cls._archivo, "rb") as f:
-                return pickle.load(f)
-        except (FileNotFoundError, EOFError):
-            return {}
-
-    @classmethod
-    def _guardar(cls, datos):
-        with open(cls._archivo, "wb") as f:
-            pickle.dump(datos, f)
-
-    @classmethod
-    def registrar(cls):
-        entrenadores = cls._cargar()
-
-        usuario = input("Usuario: ").strip()
->>>>>>> b6f705b77ef221602d9b51533faaa2621a2172cd
         if usuario in entrenadores:
             print("Usuario ya existe")
             return
 
-<<<<<<< HEAD
         # Solicitar contraseña y quitar espacios en blanco
         contrasena = input("Contraseña: ").strip()
 
@@ -97,25 +70,4 @@ class EntrenadorDAO:
         # Mostrar mensaje de error si las credenciales son incorrectas
         print("Usuario o contraseña incorrectos")
         # Retornar None si el login falla
-=======
-        contrasena = input("Contraseña: ").strip()
-
-        entrenadores[usuario] = {"contrasena": contrasena}
-        cls._guardar(entrenadores)
-        print("Entrenador registrado")
-
-    @classmethod
-    def iniciar_sesion(cls):
-        entrenadores = cls._cargar()
-        usuario = input("Usuario: ").strip()
-        contrasena = input("Contraseña: ").strip()
-
-        if usuario in entrenadores:
-            datos = entrenadores[usuario]
-            if isinstance(datos, dict) and "contrasena" in datos and datos["contrasena"] == contrasena:
-                print(f"Bienvenido {usuario}")
-                return usuario
-
-        print("Usuario o contraseña incorrectos")
->>>>>>> b6f705b77ef221602d9b51533faaa2621a2172cd
         return None
