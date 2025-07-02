@@ -91,7 +91,8 @@ def validar_posicion(posicion):
     posiciones_validas = ["Base", "Escolta", "Alero", "Ala-Pívot", "Pívot"]
     # Normalizar la posición: quitar tildes y convertir a minúscula
     posicion_norm = quitar_tildes(posicion.lower())
-    # Verificar si la posición normalizada está en la lista de válidas
+    # Intenta convertir la posición ingresada a su formato correcto
+    # (sin tildes, en minúsculas y comparando con el mapeo)
     return formatear_posicion(posicion) is not None
 
 # Función para formatear una posición a su forma correcta
