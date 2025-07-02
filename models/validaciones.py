@@ -70,14 +70,6 @@ def validar_peso(peso):
         # Si hay error en la conversión, retornar False
         return False
 
-# Función para convertir un peso de texto a número decimal
-def parsear_peso(peso):
-    # Reemplazar comas por puntos para el formato decimal
-    peso = peso.replace(',', '.')
-    # Convertir y retornar como número decimal
-    return float(peso)
-
-# Función para validar que una altura sea válida
 def validar_altura(altura):
     try:
         # Reemplazar comas por puntos para el formato decimal
@@ -92,18 +84,6 @@ def validar_altura(altura):
     except:
         # Si hay error en la conversión, retornar False
         return False
-
-# Función para convertir una altura de texto a número decimal en centímetros
-def parsear_altura(altura):
-    # Reemplazar comas por puntos para el formato decimal
-    altura = altura.replace(',', '.')
-    # Convertir a número decimal
-    altura_f = float(altura)
-    # Si la altura es menor a 10, asumir que está en metros y convertir a cm
-    if altura_f < 10:
-        altura_f *= 100
-    # Retornar la altura en centímetros
-    return altura_f
 
 # Función para validar que una posición de básquet sea válida
 def validar_posicion(posicion):
