@@ -84,17 +84,7 @@ def validar_altura(altura):
     except:
         # Si hay error en la conversión, retornar False
         return False
-
-# Función para validar que una posición de básquet sea válida
-def validar_posicion(posicion):
-    # Lista de posiciones válidas en básquetbol
-    posiciones_validas = ["Base", "Escolta", "Alero", "Ala-Pívot", "Pívot"]
-    # Normalizar la posición: quitar tildes y convertir a minúscula
-    posicion_norm = quitar_tildes(posicion.lower())
-    # Intenta convertir la posición ingresada a su formato correcto
-    # (sin tildes, en minúsculas y comparando con el mapeo)
-    return formatear_posicion(posicion) is not None
-
+    
 # Función para formatear una posición a su forma correcta
 def formatear_posicion(posicion):
     # Diccionario de mapeo de posiciones normalizadas a formato correcto
@@ -109,6 +99,14 @@ def formatear_posicion(posicion):
     posicion_norm = quitar_tildes(posicion.lower())
     # Buscar en el diccionario y retornar la forma correcta, o None si no existe
     return map_pos.get(posicion_norm, None)
+
+# Función para validar que una posición de básquet sea válida
+def validar_posicion(posicion):
+    # Lista de posiciones válidas en básquetbol
+    posiciones_validas = ["Base", "Escolta", "Alero", "Ala-Pívot", "Pívot"]
+    # Intenta convertir la posición ingresada a su formato correcto
+    # (sin tildes, en minúsculas y comparando con el mapeo) 
+    return formatear_posicion(posicion) is not None
 
 # Función para validar que los antecedentes médicos sean válidos
 def validar_antecedentes(antecedentes):
