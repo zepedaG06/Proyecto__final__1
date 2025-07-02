@@ -92,7 +92,7 @@ def validar_posicion(posicion):
     # Normalizar la posición: quitar tildes y convertir a minúscula
     posicion_norm = quitar_tildes(posicion.lower())
     # Verificar si la posición normalizada está en la lista de válidas
-    return posicion_norm in posiciones_validas
+    return formatear_posicion(posicion) is not None
 
 # Función para formatear una posición a su forma correcta
 def formatear_posicion(posicion):
